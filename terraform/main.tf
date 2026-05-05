@@ -16,8 +16,9 @@ module "vpc" {
   private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
   public_subnets  = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
 
-  enable_nat_gateway   = true
-  single_nat_gateway   = true
+  enable_nat_gateway     = true
+  single_nat_gateway     = false
+  one_nat_gateway_per_az = true
   enable_dns_hostnames = true
 
   public_subnet_tags = {
@@ -39,6 +40,8 @@ module "eks" {
 
   # TODO: restrict to VPN/office CIDR in production
   endpoint_public_access                   = true
+  public_access_cidrs                      = length(var.api_access_cidrs) > 0 ? var.api_access_cidrs : ["0.0.0.0/0"]
+  endpoint_private_access                  = true
   enable_cluster_creator_admin_permissions = true
 
   vpc_id     = module.vpc.vpc_id
